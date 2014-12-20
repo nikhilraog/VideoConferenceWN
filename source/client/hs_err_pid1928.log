@@ -1,0 +1,104 @@
+
+An unexpected exception has been detected in native code outside the VM.
+Unexpected Signal : EXCEPTION_ACCESS_VIOLATION occurred at PC=0x8F0
+Function=[Unknown.]
+Library=(N/A)
+
+NOTE: We are unable to locate the function name symbol for the error
+      just occurred. Please refer to release documentation for possible
+      reason and solutions.
+
+
+Current Java thread:
+	at com.sun.media.renderer.audio.DirectAudioRenderer.nGetSamplesPlayed(Native Method)
+	at com.sun.media.renderer.audio.DirectAudioRenderer.access$10(DirectAudioRenderer.java:320)
+	at com.sun.media.renderer.audio.DirectAudioRenderer$DirectAudioOutput.getMediaNanoseconds(DirectAudioRenderer.java:587)
+	at com.sun.media.renderer.audio.AudioRenderer.getMediaNanoseconds(AudioRenderer.java:450)
+	at com.sun.media.PlaybackEngine$SlaveClock.getMediaNanoseconds(PlaybackEngine.java:2040)
+	at com.sun.media.BasicController.getMediaNanoseconds(BasicController.java:650)
+	at com.sun.media.MediaPlayer.getMediaNanoseconds(MediaPlayer.java:93)
+	at com.sun.media.BasicPlayer.getDuration(BasicPlayer.java:321)
+	at com.sun.media.ui.ProgressSlider.run(ProgressSlider.java:233)
+	at java.lang.Thread.run(Thread.java:536)
+
+Dynamic libraries:
+0x00400000 - 0x00406000 	F:\WINNT\system32\java.exe
+0x77F80000 - 0x77FF9000 	F:\WINNT\System32\ntdll.dll
+0x77DB0000 - 0x77E0A000 	F:\WINNT\system32\ADVAPI32.dll
+0x77E80000 - 0x77F36000 	F:\WINNT\system32\KERNEL32.DLL
+0x77D40000 - 0x77DAF000 	F:\WINNT\system32\RPCRT4.DLL
+0x78000000 - 0x78046000 	F:\WINNT\system32\MSVCRT.dll
+0x6D330000 - 0x6D442000 	F:\Program Files\Java\j2re1.4.0\bin\client\jvm.dll
+0x77E10000 - 0x77E75000 	F:\WINNT\system32\USER32.dll
+0x77F40000 - 0x77F7C000 	F:\WINNT\system32\GDI32.DLL
+0x77570000 - 0x775A0000 	F:\WINNT\system32\WINMM.dll
+0x6D1D0000 - 0x6D1D7000 	F:\Program Files\Java\j2re1.4.0\bin\hpi.dll
+0x6D300000 - 0x6D30D000 	F:\Program Files\Java\j2re1.4.0\bin\verify.dll
+0x6D210000 - 0x6D228000 	F:\Program Files\Java\j2re1.4.0\bin\java.dll
+0x6D320000 - 0x6D32D000 	F:\Program Files\Java\j2re1.4.0\bin\zip.dll
+0x6D000000 - 0x6D0F6000 	F:\Program Files\Java\j2re1.4.0\bin\awt.dll
+0x77800000 - 0x7781D000 	F:\WINNT\system32\WINSPOOL.DRV
+0x75E60000 - 0x75E7A000 	F:\WINNT\system32\IMM32.dll
+0x77A50000 - 0x77B45000 	F:\WINNT\system32\ole32.dll
+0x6D180000 - 0x6D1D0000 	F:\Program Files\Java\j2re1.4.0\bin\fontmanager.dll
+0x69510000 - 0x695D7000 	F:\WINNT\system32\OPENGL32.dll
+0x6FAC0000 - 0x6FADF000 	F:\WINNT\system32\GLU32.dll
+0x51000000 - 0x51044000 	F:\WINNT\system32\DDRAW.dll
+0x728A0000 - 0x728A6000 	F:\WINNT\system32\DCIMAN32.dll
+0x10000000 - 0x101D1000 	F:\WINNT\system32\i81xgicd.dll
+0x60000000 - 0x60045000 	F:\WINNT\System32\MSCTF.dll
+0x6D2D0000 - 0x6D2DD000 	F:\Program Files\Java\j2re1.4.0\bin\net.dll
+0x75050000 - 0x75058000 	F:\WINNT\system32\WSOCK32.dll
+0x75030000 - 0x75044000 	F:\WINNT\system32\WS2_32.DLL
+0x75020000 - 0x75028000 	F:\WINNT\system32\WS2HELP.DLL
+0x77840000 - 0x7784C000 	F:\WINNT\System32\rnr20.dll
+0x77980000 - 0x779A4000 	F:\WINNT\system32\DNSAPI.DLL
+0x777E0000 - 0x777E8000 	F:\WINNT\System32\winrnr.dll
+0x77950000 - 0x77979000 	F:\WINNT\system32\WLDAP32.DLL
+0x777F0000 - 0x777F5000 	F:\WINNT\system32\rasadhlp.dll
+0x77830000 - 0x7783E000 	F:\WINNT\system32\RTUTILS.DLL
+0x779B0000 - 0x77A45000 	F:\WINNT\system32\OLEAUT32.DLL
+0x0FAA0000 - 0x0FAB5000 	F:\WINNT\system32\jmutil.dll
+0x74FD0000 - 0x74FE1000 	F:\WINNT\system32\msafd.dll
+0x75010000 - 0x75017000 	F:\WINNT\System32\wshtcpip.dll
+0x003B0000 - 0x003BD000 	F:\WINNT\system32\jmacm.dll
+0x77410000 - 0x77423000 	F:\WINNT\system32\MSACM32.dll
+0x74F90000 - 0x74F97000 	F:\WINNT\system32\imaadp32.acm
+0x75D40000 - 0x75D46000 	F:\WINNT\system32\msadp32.acm
+0x74F70000 - 0x74F75000 	F:\WINNT\system32\msg711.acm
+0x74F40000 - 0x74F49000 	F:\WINNT\system32\msgsm32.acm
+0x74F30000 - 0x74F34000 	F:\WINNT\system32\tssoft32.acm
+0x66B00000 - 0x66B07000 	F:\WINNT\system32\tsd32.dll
+0x74F80000 - 0x74F8B000 	F:\WINNT\system32\lhacm.acm
+0x74F50000 - 0x74F6D000 	F:\WINNT\system32\msg723.acm
+0x648C0000 - 0x648F9000 	F:\WINNT\System32\iac25_32.ax
+0x2E460000 - 0x2E4AF000 	F:\WINNT\system32\msaud32.acm
+0x2E510000 - 0x2E536000 	F:\WINNT\system32\sl_anet.acm
+0x10B00000 - 0x10B0C000 	F:\WINNT\system32\jmdaud.dll
+0x51080000 - 0x510D4000 	F:\WINNT\system32\DSOUND.dll
+0x77820000 - 0x77827000 	F:\WINNT\system32\VERSION.dll
+0x759B0000 - 0x759B6000 	F:\WINNT\system32\LZ32.DLL
+0x77560000 - 0x77569000 	F:\WINNT\system32\wdmaud.drv
+0x77400000 - 0x77408000 	F:\WINNT\system32\msacm32.drv
+0x77B50000 - 0x77BDA000 	F:\WINNT\system32\COMCTL32.dll
+0x5EF80000 - 0x5EF84000 	F:\WINNT\system32\KsUser.dll
+0x11640000 - 0x1164B000 	F:\WINNT\system32\jmvcm.dll
+0x6A8F0000 - 0x6A910000 	F:\WINNT\system32\MSVFW32.dll
+0x775A0000 - 0x777E0000 	F:\WINNT\system32\SHELL32.dll
+0x77C70000 - 0x77CBA000 	F:\WINNT\system32\SHLWAPI.DLL
+0x7F840000 - 0x7F869000 	F:\WINNT\system32\lvcodec2.dll
+0x117F0000 - 0x1189C000 	F:\WINNT\system32\jmvh263.dll
+0x119B0000 - 0x119BA000 	F:\WINNT\system32\jmddraw.dll
+0x6D230000 - 0x6D235000 	F:\Program Files\Java\j2re1.4.0\bin\jawt.dll
+0x120D0000 - 0x120D9000 	F:\WINNT\system32\jmfjawt.dll
+0x77920000 - 0x77942000 	F:\WINNT\system32\imagehlp.dll
+0x72A00000 - 0x72A2D000 	F:\WINNT\system32\DBGHELP.dll
+0x690A0000 - 0x690AB000 	F:\WINNT\system32\PSAPI.DLL
+
+Local Time = Wed Mar 24 18:36:02 2004
+Elapsed Time = 1251
+#
+# The exception above was detected in native code outside the VM
+#
+# Java VM: Java HotSpot(TM) Client VM (1.4.0-b92 mixed mode)
+#

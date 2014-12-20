@@ -1,0 +1,660 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3c.org/TR/1999/REC-html401-19991224/loose.dtd">
+<!-- saved from url=(0065)http://jan.netcomp.monash.edu.au/internetdevices/jmf/lecture.html -->
+<HTML><HEAD><TITLE>JMF</TITLE>
+<META http-equiv=Content-Type content="text/html; charset=utf-8"><LINK 
+href="JMF_files/stylesheet.css" type=text/css rel=stylesheet>
+<META content="©Jan Newmarch " name=copyright>
+<META content="MSHTML 6.00.2900.2180" name=GENERATOR></HEAD>
+<BODY>
+<CENTER>
+<H1>Java Media Framework (JMF)</H1></CENTER>
+<H1>JMF </H1>
+<P>
+<UL>
+  <LI>JMF is a set of classes to handle multimedia data 
+  <LI>It can deal with audio and video 
+  <LI>It can read from sources and write to sinks 
+  <LI>Sources can be files, devices or the network 
+  <LI>Sinks can be files, devices or the network </LI></UL>
+<P></P>
+<H1>Audio file formats </H1>
+<P>There are a huge number of different file formats 
+<UL>
+  <LI>PCM (Pulse code modulated): raw digital data e.g. from a CD 
+  <LI>ALAW: U.S. and international standards for logarithmic telephone sound 
+  compression 
+  <LI>GSM: a standard used for telephone sound compression in European countries 
+
+  <LI>Music sound formats such as AU, WAV, MP3, ... </LI></UL>
+<P></P>
+<H1>Video formats </H1>
+<P>There are also a huge number of video formats 
+<UL>
+  <LI>MPEG 
+  <LI>AVI 
+  <LI>Quicktime 
+  <LI>WMF </LI></UL>
+<P></P>
+<H1>Handling formats </H1>
+<P>
+<UL>
+  <LI>JMF does its best to handle all these formats with as little programmer 
+  intervention as possible 
+  <LI>It detects devices automatically, and uses converters automatically 
+  <LI>It doesn't seem to leave enough programmer control at times </LI></UL>
+<P></P>
+<H1>Player </H1>
+<P>
+<UL>
+  <LI>JMF uses a <CODE>Player</CODE> to deliver data to a suitable output device 
+
+  <LI>The output device is selected by the Player based on media type - if 
+  possible 
+  <LI>Players are created using a <CODE>Manager</CODE> factory 
+  <LI>This allows the set of Players to be extended 
+  <LI>A Player will generate events such as StartEvent, StopEvent 
+  <LI>A Player has methods such as <CODE>stop()</CODE> and <CODE>start()</CODE> 
+  plus many others for control of media and time </LI></UL>
+<P></P>
+<H1>Play a file </H1>
+<P><PRE><CODE><FONT color=black>
+<FONT color=purple>import</FONT> java.io.*;
+
+<FONT color=purple>import</FONT> javax.media.*;
+<FONT color=purple>import</FONT> javax.media.format.*;
+<FONT color=purple>import</FONT> javax.media.protocol.*;
+
+<FONT color=purple>public</FONT> <FONT color=purple>class</FONT> <FONT color=blue>PlayFile</FONT> implements <FONT color=blue>ControllerListener</FONT> {
+    <FONT color=red>// private String srcFile = "src.au";
+</FONT>    <FONT color=red>// private String srcFile = "tull.mpg";
+</FONT>    <FONT color=purple>private</FONT> <FONT color=blue>String</FONT> srcFile = <FONT color=magenta>"the_privilege.mpg"</FONT>;
+
+    <FONT color=purple>public</FONT> <FONT color=#00c0c0>static</FONT> <FONT color=green>void</FONT> main(<FONT color=blue>String</FONT> [] args) {
+	<FONT color=#00c0c0>new</FONT> <FONT color=blue>PlayFile</FONT>();
+    }
+
+    <FONT color=purple>public</FONT> <FONT color=blue>PlayFile</FONT>() {
+	<FONT color=blue>Player</FONT> p;
+
+	<FONT color=blue>MediaLocator</FONT> src = <FONT color=#00c0c0>new</FONT> <FONT color=blue>MediaLocator</FONT>(<FONT color=magenta>"file:"</FONT> + srcFile);
+
+	<FONT color=#00c0c0>try</FONT> {
+	    p = <FONT color=blue>Manager</FONT>.createPlayer(src);
+	    p.addControllerListener(<FONT color=#00c0c0>this</FONT>);
+	    p.start();
+	} <FONT color=#00c0c0>catch</FONT>(<FONT color=blue>Exception</FONT> e) {
+	    e.printStackTrace();
+	    <FONT color=blue>System</FONT>.exit(1);
+	}
+    }
+
+    <FONT color=purple>public</FONT> <FONT color=#00c0c0>synchronized</FONT> <FONT color=green>void</FONT> controllerUpdate(<FONT color=blue>ControllerEvent</FONT> evt) {
+	<FONT color=#00c0c0>if</FONT> (evt <FONT color=#00c0c0>instanceof</FONT> <FONT color=blue>EndOfMediaEvent</FONT>) {
+	    <FONT color=blue>System</FONT>.out.println(<FONT color=magenta>"Play finished"</FONT>);
+	    <FONT color=blue>System</FONT>.exit(0);
+	} <FONT color=#00c0c0>else</FONT> {
+	    <FONT color=blue>System</FONT>.out.println(evt.toString());
+	}
+    }
+}
+
+</FONT></CODE></PRE>
+<P></P>
+<H1>Presentation </H1>
+<P>
+<UL>
+  <LI>A Player can be controlled by calling its methods 
+  <LI>A Player may also have an associated user interface for controlling it 
+  <LI>The <EM>control panel</EM> is obtained by <CODE>getControlPanelComponent() 
+  </CODE>which returns an AWT <CODE>Component</CODE> 
+  <LI>The control panel may have e.g. buttons for stop and start 
+  <LI>A Player which can display video data can also have a <EM>visual 
+  component</EM> which is obtained by <CODE>getVisualComponent()</CODE> </LI></UL>
+<P></P>
+<H1>Play a file with a UI </H1>
+<P><PRE><CODE><FONT color=black>
+<FONT color=purple>import</FONT> java.io.*;
+<FONT color=purple>import</FONT> java.awt.*;
+
+<FONT color=purple>import</FONT> javax.media.*;
+<FONT color=purple>import</FONT> javax.media.format.*;
+<FONT color=purple>import</FONT> javax.media.protocol.*;
+
+<FONT color=purple>public</FONT> <FONT color=purple>class</FONT> <FONT color=blue>PlayFileGUI</FONT> extends <FONT color=blue>Frame</FONT> implements <FONT color=blue>ControllerListener</FONT> {
+    <FONT color=purple>private</FONT> <FONT color=green>boolean</FONT> realized = false;
+    <FONT color=purple>private</FONT> <FONT color=green>boolean</FONT> configured = false;
+    <FONT color=purple>private</FONT> <FONT color=blue>Player</FONT> p = null;
+
+    <FONT color=purple>public</FONT> <FONT color=#00c0c0>static</FONT> <FONT color=green>void</FONT> main(<FONT color=blue>String</FONT> [] args) {
+	<FONT color=#00c0c0>new</FONT> <FONT color=blue>PlayFileGUI</FONT>();
+    }
+
+    <FONT color=purple>public</FONT> <FONT color=blue>PlayFileGUI</FONT>() {
+	<FONT color=blue>MediaLocator</FONT> src = <FONT color=#00c0c0>new</FONT> <FONT color=blue>MediaLocator</FONT>(<FONT color=magenta>"file:"</FONT> + <FONT color=magenta>"src.wav"</FONT>);
+
+	<FONT color=#00c0c0>try</FONT> {
+	    p = <FONT color=blue>Manager</FONT>.createPlayer(src);
+	    p.addControllerListener(<FONT color=#00c0c0>this</FONT>);
+	    p.realize();
+	} <FONT color=#00c0c0>catch</FONT>(<FONT color=blue>Exception</FONT> e) {
+	    e.printStackTrace();
+	    <FONT color=blue>System</FONT>.exit(1);
+	}
+    }
+
+    <FONT color=purple>public</FONT> <FONT color=#00c0c0>synchronized</FONT> <FONT color=green>void</FONT> controllerUpdate(<FONT color=blue>ControllerEvent</FONT> evt) {
+	<FONT color=#00c0c0>if</FONT> (evt <FONT color=#00c0c0>instanceof</FONT> <FONT color=blue>RealizeCompleteEvent</FONT>) {
+	    <FONT color=blue>Component</FONT> controlPanel = p.getControlPanelComponent();
+	    add(controlPanel, <FONT color=blue>BorderLayout</FONT>.<FONT color=blue><FONT color=darkmagenta>CENTER</FONT></FONT>);
+	    pack();
+	    setVisible(true);
+	} <FONT color=#00c0c0>else</FONT> {
+	    <FONT color=red>// System.out.println(evt.toString());
+</FONT>	}
+    }
+}
+
+</FONT></CODE></PRE>
+<P></P>
+<H1>Processor </H1>
+<P>
+<UL>
+  <LI>To manipulate data a Processor object is used 
+  <LI>A Processor has a <EM>source</EM> and a <EM>sink</EM> 
+  <LI>Based on the media types of the source and the sink, the Presentation may 
+  convert the data from one format to another 
+  <LI>A Processor goes through the stages of 
+  <UL>
+    <LI>configuration 
+    <LI>realization 
+    <LI>prefetching data 
+    <LI>started </LI></UL>
+  <LI>Selection of a converter is supposed to take place automatically, but may 
+  not 
+  <UL>
+    <LI>When a processor is created (from a <CODE>Manager</CODE>) the source is 
+    set 
+    <LI>The sink cannot be set until the processor has been realized 
+    <LI><EM>But</EM>, the processor may do things after configuration but before 
+    realization that limit possible sink types 
+    <LI><EM>Note:</EM> <CODE>configure()</CODE> and <CODE>realize()</CODE> act 
+    asynchronously, and return immediately </LI></UL></LI></UL>
+<P></P>
+<H1>Copy a file </H1>
+<P><PRE><CODE><FONT color=black>
+<FONT color=purple>import</FONT> java.io.*;
+<FONT color=purple>import</FONT> java.util.<FONT color=blue>Vector</FONT>;
+
+<FONT color=purple>import</FONT> javax.media.*;
+<FONT color=purple>import</FONT> javax.media.format.*;
+<FONT color=purple>import</FONT> javax.media.protocol.*;
+
+<FONT color=purple>public</FONT> <FONT color=purple>class</FONT> <FONT color=blue>Copy</FONT> implements <FONT color=blue>ControllerListener</FONT> {
+    <FONT color=purple>private</FONT> <FONT color=green>boolean</FONT> realized = false;
+    <FONT color=purple>private</FONT> <FONT color=green>boolean</FONT> configured = false;
+
+    <FONT color=purple>public</FONT> <FONT color=#00c0c0>static</FONT> <FONT color=green>void</FONT> main(<FONT color=blue>String</FONT> [] args) {
+	<FONT color=#00c0c0>new</FONT> <FONT color=blue>Copy</FONT>();
+    }
+
+    <FONT color=purple>public</FONT> <FONT color=blue>Copy</FONT>() {
+	<FONT color=blue>Processor</FONT> p;
+
+	<FONT color=blue>DataSink</FONT> sink;
+	<FONT color=blue>MediaLocator</FONT> src = <FONT color=#00c0c0>new</FONT> <FONT color=blue>MediaLocator</FONT>(<FONT color=magenta>"file:"</FONT> + <FONT color=magenta>"tull.mp3"</FONT>);
+	<FONT color=blue>MediaLocator</FONT> dest = <FONT color=#00c0c0>new</FONT> <FONT color=blue>MediaLocator</FONT>(<FONT color=magenta>"file:"</FONT> + <FONT color=magenta>"tmp.mp3"</FONT>);
+
+	<FONT color=#00c0c0>try</FONT> {
+	    p = <FONT color=blue>Manager</FONT>.createProcessor(src);
+	    p.addControllerListener(<FONT color=#00c0c0>this</FONT>);
+
+	    p.configure();
+	    <FONT color=#00c0c0>while</FONT> (! configured) {
+		<FONT color=#00c0c0>try</FONT> {
+		    <FONT color=blue>Thread</FONT>.currentThread().sleep(100L);;
+		} <FONT color=#00c0c0>catch</FONT> (<FONT color=blue>InterruptedException</FONT> e) {
+		    <FONT color=red>// ignore
+</FONT>		}
+	    }
+
+	    <FONT color=blue>ContentDescriptor</FONT>[] descriptors = p.getSupportedContentDescriptors();
+	    <FONT color=#00c0c0>for</FONT> (<FONT color=green>int</FONT> n = 0; n &lt; descriptors.length; n++) {
+		<FONT color=blue>System</FONT>.out.println(<FONT color=magenta>"Desc: "</FONT> + descriptors[n].toString());
+	    }
+	    p.setContentDescriptor(<FONT color=#00c0c0>new</FONT> <FONT color=blue>ContentDescriptor</FONT>(<FONT color=blue>FileTypeDescriptor</FONT>.<FONT color=blue><FONT color=darkmagenta>MPEG_AUDIO</FONT></FONT>));
+
+	    p.realize();
+	    <FONT color=#00c0c0>while</FONT> (! realized) {
+		<FONT color=#00c0c0>try</FONT> {
+		    <FONT color=blue>Thread</FONT>.currentThread().sleep(100L);;
+		} <FONT color=#00c0c0>catch</FONT> (<FONT color=blue>InterruptedException</FONT> e) {
+		    <FONT color=red>// ignore
+</FONT>		}
+	    }
+
+	    <FONT color=blue>DataSource</FONT> output = p.getDataOutput();
+
+	    <FONT color=blue>System</FONT>.out.println(<FONT color=magenta>"DataSource type: "</FONT>);
+	    <FONT color=blue>Class</FONT> cls = output.getClass();
+	    <FONT color=#00c0c0>while</FONT> (cls != null) {
+		<FONT color=blue>System</FONT>.out.println(cls.toString());
+		cls = cls.getSuperclass();
+	    }
+
+	    sink = <FONT color=blue>Manager</FONT>.createDataSink(output, dest);
+	    sink.open();
+	    sink.start();
+	    p.start();
+
+	} <FONT color=#00c0c0>catch</FONT>(<FONT color=blue>Exception</FONT> e) {
+	    e.printStackTrace();
+	    <FONT color=blue>System</FONT>.exit(1);
+	}
+    }
+
+    <FONT color=purple>public</FONT> <FONT color=#00c0c0>synchronized</FONT> <FONT color=green>void</FONT> controllerUpdate(<FONT color=blue>ControllerEvent</FONT> evt) {
+	<FONT color=#00c0c0>if</FONT> (evt <FONT color=#00c0c0>instanceof</FONT> <FONT color=blue>RealizeCompleteEvent</FONT>) {
+	    realized = true;
+	} <FONT color=#00c0c0>else</FONT> 	<FONT color=#00c0c0>if</FONT> (evt <FONT color=#00c0c0>instanceof</FONT> <FONT color=blue>ConfigureCompleteEvent</FONT>) {
+	    configured = true;
+	} <FONT color=#00c0c0>else</FONT> <FONT color=#00c0c0>if</FONT> (evt <FONT color=#00c0c0>instanceof</FONT> <FONT color=blue>EndOfMediaEvent</FONT>) {
+	    <FONT color=blue>System</FONT>.exit(0);
+	} <FONT color=#00c0c0>else</FONT> {
+	    <FONT color=red>// System.out.println(evt.toString());
+</FONT>	}
+    }
+}
+
+</FONT></CODE></PRE>
+<P></P>
+<H1>Capture devices </H1>
+<P>
+<UL>
+  <LI>When JMF is installed, it attempts to find all the A/V devices attached to 
+  the computer 
+  <LI>This list is stored in the JMF properties files, and is used to determine 
+  which DLLs are loaded 
+  <LI>A <CODE>CaptureDeviceManager</CODE> can be queried for all devices, or for 
+  devices supporting a particular <CODE>Format</CODE> e.g. an 
+  <CODE>AudioFormat</CODE> supporting a <CODE>LINEAR</CODE> encoding with a 
+  sample rate of 44100 samples per second, 16 bits stereo (a CD player) </LI></UL>
+<P></P>
+<H1>List capture devices </H1>
+<P><PRE><CODE><FONT color=black>
+<FONT color=purple>import</FONT> java.io.*;
+<FONT color=purple>import</FONT> java.util.<FONT color=blue>Vector</FONT>;
+
+<FONT color=purple>import</FONT> javax.media.*;
+<FONT color=purple>import</FONT> javax.media.format.*;
+
+
+<FONT color=purple>public</FONT> <FONT color=purple>class</FONT> <FONT color=blue>Devices</FONT> {
+
+    <FONT color=purple>public</FONT> <FONT color=#00c0c0>static</FONT> <FONT color=green>void</FONT> main(<FONT color=blue>String</FONT> [] args) {
+
+	<FONT color=blue>Vector</FONT> devices= <FONT color=blue>CaptureDeviceManager</FONT>.getDeviceList(null);
+	<FONT color=blue>System</FONT>.out.println(<FONT color=magenta>"Number of capture devices: "</FONT> + devices.size());
+	<FONT color=#00c0c0>for</FONT> (<FONT color=green>int</FONT> n = 0; n &lt; devices.size(); n++) {
+	    <FONT color=blue>CaptureDeviceInfo</FONT> info = (<FONT color=blue>CaptureDeviceInfo</FONT>) devices.elementAt(n);
+	    <FONT color=blue>System</FONT>.out.println(info.toString());
+	}
+    }
+}
+
+</FONT></CODE></PRE>
+<P></P>
+<H1>Playing from a device </H1>
+<P>This program should copy from the sound card to a file. It doesn't work on my 
+laptop as "interface TargetDataLine supporting format PCM_SIGNED..." is not 
+found <PRE><CODE><FONT color=black>
+<FONT color=purple>import</FONT> java.io.*;
+<FONT color=purple>import</FONT> java.util.<FONT color=blue>Vector</FONT>;
+
+<FONT color=purple>import</FONT> javax.media.*;
+<FONT color=purple>import</FONT> javax.media.format.*;
+<FONT color=purple>import</FONT> javax.media.protocol.*;
+
+<FONT color=purple>public</FONT> <FONT color=purple>class</FONT> <FONT color=blue>SoundCardToFile</FONT> implements <FONT color=blue>ControllerListener</FONT> {
+
+    <FONT color=purple>public</FONT> <FONT color=#00c0c0>static</FONT> <FONT color=green>void</FONT> main(<FONT color=blue>String</FONT> [] args) {
+	<FONT color=#00c0c0>new</FONT> <FONT color=blue>SoundCardToFile</FONT>();
+    }
+
+    <FONT color=purple>public</FONT> <FONT color=blue>SoundCardToFile</FONT>() {
+	<FONT color=blue>Processor</FONT> p = null;
+
+	<FONT color=blue>AudioFormat</FONT> format= <FONT color=#00c0c0>new</FONT> <FONT color=blue>AudioFormat</FONT>(<FONT color=blue>AudioFormat</FONT>.<FONT color=blue><FONT color=darkmagenta>LINEAR</FONT></FONT>); <FONT color=red>//, 
+</FONT>	<FONT color=red>// 44100, 
+</FONT>	<FONT color=red>//			    16, 
+</FONT>	<FONT color=red>//			    2); 
+</FONT>
+	<FONT color=#00c0c0>try</FONT> {
+	    p = <FONT color=blue>Manager</FONT>.createRealizedProcessor(
+                        <FONT color=#00c0c0>new</FONT> <FONT color=blue>ProcessorModel</FONT>(<FONT color=#00c0c0>new</FONT> <FONT color=blue>Format</FONT>[] {format},
+			    <FONT color=#00c0c0>new</FONT> <FONT color=blue>ContentDescriptor</FONT>(<FONT color=blue>ContentDescriptor</FONT>.<FONT color=blue><FONT color=darkmagenta>RAW</FONT></FONT>)));
+	} <FONT color=#00c0c0>catch</FONT> (<FONT color=blue>Exception</FONT> e) {
+	    <FONT color=blue>System</FONT>.err.println(e.toString());
+	    <FONT color=blue>System</FONT>.exit(1);
+	}
+	<FONT color=blue>System</FONT>.out.println(<FONT color=magenta>"GOT HERE"</FONT>);
+
+	<FONT color=blue>DataSink</FONT> sink;
+	<FONT color=blue>MediaLocator</FONT> dest = <FONT color=#00c0c0>new</FONT> <FONT color=blue>MediaLocator</FONT>(<FONT color=magenta>"file:"</FONT> + <FONT color=magenta>"copy.au"</FONT>);
+
+	<FONT color=#00c0c0>try</FONT> {
+	    <FONT color=blue>DataSource</FONT> output = p.getDataOutput();
+	    sink = <FONT color=blue>Manager</FONT>.createDataSink(output, dest);
+	    sink.open();
+	    sink.start();
+	    p.start();
+	   
+	} <FONT color=#00c0c0>catch</FONT>(<FONT color=blue>Exception</FONT> e) {
+	    e.printStackTrace();
+	    <FONT color=blue>System</FONT>.exit(1);
+	}
+    }
+
+    <FONT color=purple>public</FONT> <FONT color=#00c0c0>synchronized</FONT> <FONT color=green>void</FONT> controllerUpdate(<FONT color=blue>ControllerEvent</FONT> evt) {
+	<FONT color=#00c0c0>if</FONT> (evt <FONT color=#00c0c0>instanceof</FONT> <FONT color=blue>EndOfMediaEvent</FONT>) {
+	    <FONT color=blue>System</FONT>.exit(0);
+	} <FONT color=#00c0c0>else</FONT> {
+	    <FONT color=red>// System.out.println(evt.toString());
+</FONT>	}
+    }
+}
+
+</FONT></CODE></PRE>
+<H1>Real-time protocol RTP </H1>
+<P>
+<UL>
+  <LI>LANs based on ethernet are not "real time" with guaranteed time of 
+  delivery of packets, due to the collision algorithm used (back off a random 
+  amount of time) 
+  <LI>The IP protocol does not guarantee delivery between hosts, let alone a 
+  guaranteed time of delivery 
+  <LI>TCP gives reliable delivery between ports, or at least a failure message 
+  <LI>UDP gives unreliable delivery between ports, with no time guarantee. But 
+  in practise, on LANs, UDP is reliable and time is not usually too much of a 
+  problem 
+  <LI>RTP sits above UDP, and offers limited guarantees of delivery and 
+  timeliness </LI></UL>
+<P></P>
+<H1>RTP client </H1>
+<P>The following client uses a simple way of getting streaming RTP data from a 
+server. It <EM>must</EM> be running on a different machine to the server. If you 
+try on the same machine, then since they both use UDP they will try to connect 
+to the same port and one will fail. <PRE><CODE><FONT color=black>
+<FONT color=purple>import</FONT> java.io.*;
+
+<FONT color=purple>import</FONT> javax.media.*;
+<FONT color=purple>import</FONT> javax.media.format.*;
+<FONT color=purple>import</FONT> javax.media.protocol.*;
+
+<FONT color=purple>public</FONT> <FONT color=purple>class</FONT> <FONT color=blue>RTPClient</FONT> implements <FONT color=blue>ControllerListener</FONT> {
+
+    <FONT color=purple>public</FONT> <FONT color=#00c0c0>static</FONT> <FONT color=green>void</FONT> main(<FONT color=blue>String</FONT> [] args) {
+	<FONT color=#00c0c0>new</FONT> <FONT color=blue>RTPClient</FONT>();
+    }
+
+    <FONT color=purple>public</FONT> <FONT color=blue>RTPClient</FONT>() {
+	<FONT color=blue>Player</FONT> p;
+
+	<FONT color=blue>String</FONT> srcUrl = <FONT color=magenta>"rtp://192.168.2.1:42050/audio/1"</FONT>;
+	<FONT color=blue>DataSink</FONT> sink;
+	<FONT color=blue>MediaLocator</FONT> src = <FONT color=#00c0c0>new</FONT> <FONT color=blue>MediaLocator</FONT>(srcUrl);
+
+	<FONT color=#00c0c0>try</FONT> {
+	    p = <FONT color=blue>Manager</FONT>.createPlayer(src);
+	    p.addControllerListener(<FONT color=#00c0c0>this</FONT>);
+	    p.start();
+	} <FONT color=#00c0c0>catch</FONT>(<FONT color=blue>Exception</FONT> e) {
+	    e.printStackTrace();
+	    <FONT color=blue>System</FONT>.exit(1);
+	}
+    }
+
+    <FONT color=purple>public</FONT> <FONT color=#00c0c0>synchronized</FONT> <FONT color=green>void</FONT> controllerUpdate(<FONT color=blue>ControllerEvent</FONT> evt) {
+	<FONT color=#00c0c0>if</FONT> (evt <FONT color=#00c0c0>instanceof</FONT> <FONT color=blue>EndOfMediaEvent</FONT>) {
+	    <FONT color=blue>System</FONT>.exit(0);
+	} <FONT color=#00c0c0>else</FONT> {
+	    <FONT color=blue>System</FONT>.out.println(evt.toString());
+	}
+    }
+}
+
+</FONT></CODE></PRE>
+<H1>RTP server </H1>
+<P>This must tbe run on a different machine to the client. <PRE><CODE><FONT color=black>
+<FONT color=purple>import</FONT> java.io.*;
+<FONT color=purple>import</FONT> java.util.<FONT color=blue>Vector</FONT>;
+<FONT color=purple>import</FONT> java.net.<FONT color=blue>InetAddress</FONT>;
+<FONT color=purple>import</FONT> javax.media.rtp.*;
+<FONT color=purple>import</FONT> javax.media.rtp.rtcp.*;
+<FONT color=purple>import</FONT> javax.media.*;
+<FONT color=purple>import</FONT> javax.media.format.*;
+<FONT color=purple>import</FONT> javax.media.protocol.*;
+<FONT color=purple>import</FONT> javax.media.control.*;
+
+<FONT color=purple>public</FONT> <FONT color=purple>class</FONT> <FONT color=blue>RTPServer</FONT> implements <FONT color=blue>ControllerListener</FONT> {
+    <FONT color=purple>private</FONT> <FONT color=green>boolean</FONT> realized = false;
+    <FONT color=purple>private</FONT> <FONT color=green>boolean</FONT> configured = false;
+    <FONT color=purple>private</FONT> <FONT color=blue>String</FONT> ipAddress = <FONT color=magenta>"192.168.2.11"</FONT>;
+    <FONT color=purple>private</FONT> <FONT color=blue>String</FONT> destUrl = <FONT color=magenta>"rtp://192.168.2.11:42050/audio/1"</FONT>;
+    <FONT color=purple>private</FONT> <FONT color=blue>MediaLocator</FONT> dest = <FONT color=#00c0c0>new</FONT> <FONT color=blue>MediaLocator</FONT>(destUrl);
+
+    <FONT color=purple>public</FONT> <FONT color=#00c0c0>static</FONT> <FONT color=green>void</FONT> main(<FONT color=blue>String</FONT> [] args) {
+	<FONT color=#00c0c0>new</FONT> <FONT color=blue>RTPServer</FONT>();
+    }
+
+    <FONT color=purple>public</FONT> <FONT color=blue>RTPServer</FONT>() {
+	<FONT color=blue>Processor</FONT> p;
+
+	<FONT color=blue>String</FONT> srcFile = <FONT color=magenta>"long.wav"</FONT>;
+	<FONT color=blue>MediaLocator</FONT> src = <FONT color=#00c0c0>new</FONT> <FONT color=blue>MediaLocator</FONT>(<FONT color=magenta>"file:"</FONT> + srcFile);
+
+	<FONT color=#00c0c0>try</FONT> {
+	    p = <FONT color=blue>Manager</FONT>.createProcessor(src);
+	    p.addControllerListener(<FONT color=#00c0c0>this</FONT>);
+
+	    p.configure();
+	    <FONT color=#00c0c0>while</FONT> (! configured) {
+		<FONT color=#00c0c0>try</FONT> {
+		    <FONT color=blue>Thread</FONT>.currentThread().sleep(100L);;
+		} <FONT color=#00c0c0>catch</FONT> (<FONT color=blue>InterruptedException</FONT> e) {
+		    <FONT color=red>// ignore
+</FONT>		}
+	    }
+
+	    setTrackFormat(p);
+	    p.setContentDescriptor(<FONT color=#00c0c0>new</FONT> <FONT color=blue>ContentDescriptor</FONT>(<FONT color=blue>ContentDescriptor</FONT>.<FONT color=blue><FONT color=darkmagenta>RAW_RTP</FONT></FONT>));
+
+	    p.realize();
+	    <FONT color=#00c0c0>while</FONT> (! realized) {
+		<FONT color=#00c0c0>try</FONT> {
+		    <FONT color=blue>Thread</FONT>.currentThread().sleep(100L);;
+		} <FONT color=#00c0c0>catch</FONT> (<FONT color=blue>InterruptedException</FONT> e) {
+		    <FONT color=red>// ignore
+</FONT>		}
+	    }
+
+	    transmit(p);
+
+	} <FONT color=#00c0c0>catch</FONT>(<FONT color=blue>Exception</FONT> e) {
+	    e.printStackTrace();
+	    <FONT color=blue>System</FONT>.exit(1);
+	}
+    }
+
+
+<FONT color=darkred>    /**
+     * It doesn't seem to be enough to set the processor output format.
+     * This code sets the format for each track within the stream to a 
+     * supported format. On my system this a 4-bit format which sounds
+     * crappy, but is recognised by the client. 
+     * Without this track setting, the client barfs because the default
+     * track format is a 16-bit mpeg stream which the client doesn't
+     * understand
+     */
+</FONT>    <FONT color=purple>private</FONT> <FONT color=green>void</FONT> setTrackFormat(<FONT color=blue>Processor</FONT> p) {
+	<FONT color=red>// Get the tracks from the processor
+</FONT>	<FONT color=blue>TrackControl</FONT> [] tracks = p.getTrackControls();
+	
+	<FONT color=red>// Do we have atleast one track?
+</FONT>	<FONT color=#00c0c0>if</FONT> (tracks == null || tracks.length &lt; 1) {
+	    <FONT color=blue>System</FONT>.out.println(<FONT color=magenta>"Couldn't find tracks in processor"</FONT>);
+	    <FONT color=blue>System</FONT>.exit(1);
+	}
+	
+	<FONT color=red>// Set the output content descriptor to RAW_RTP
+</FONT>	<FONT color=red>// This will limit the supported formats reported from
+</FONT>	<FONT color=red>// Track.getSupportedFormats to only valid RTP formats.
+</FONT>	<FONT color=blue>ContentDescriptor</FONT> cd = <FONT color=#00c0c0>new</FONT> <FONT color=blue>ContentDescriptor</FONT>(<FONT color=blue>ContentDescriptor</FONT>.<FONT color=blue><FONT color=darkmagenta>RAW_RTP</FONT></FONT>);
+	p.setContentDescriptor(cd);
+	
+	<FONT color=blue>Format</FONT> supported[];
+	<FONT color=blue>Format</FONT> chosen;
+	<FONT color=green>boolean</FONT> atLeastOneTrack = false;
+	
+	<FONT color=red>// Program the tracks.
+</FONT>	<FONT color=#00c0c0>for</FONT> (<FONT color=green>int</FONT> i = 0; i &lt; tracks.length; i++) {
+	    <FONT color=blue>Format</FONT> format = tracks[i].getFormat();
+	    <FONT color=#00c0c0>if</FONT> (tracks[i].isEnabled()) {
+		
+		supported = tracks[i].getSupportedFormats();
+		<FONT color=#00c0c0>for</FONT> (<FONT color=green>int</FONT> n = 0; n &lt; supported.length; n++)
+		    <FONT color=blue>System</FONT>.out.println(<FONT color=magenta>"Supported format: "</FONT> + supported[n]);
+		
+		<FONT color=red>// We've set the output content to the RAW_RTP.
+</FONT>		<FONT color=red>// So all the supported formats should work with RTP.
+</FONT>		<FONT color=red>// We'll just pick the first one.
+</FONT>		
+		<FONT color=#00c0c0>if</FONT> (supported.length &gt; 0) {
+		    chosen = supported[0];
+		    tracks[i].setFormat(chosen);
+		    <FONT color=blue>System</FONT>.err.println(<FONT color=magenta>"Track "</FONT> + i + <FONT color=magenta>" is set to transmit as:"</FONT>);
+		    <FONT color=blue>System</FONT>.err.println(<FONT color=magenta>"  "</FONT> + chosen);
+		    atLeastOneTrack = true;
+		} <FONT color=#00c0c0>else</FONT>
+		    tracks[i].setEnabled(false);
+	    } <FONT color=#00c0c0>else</FONT>
+		tracks[i].setEnabled(false);
+	}
+    }
+
+<FONT color=darkred>    /**
+     * This code uses the RTP Manager to handle a session
+     * stream. It is more complex than the simpler version
+     * below, but can also handle more complex streams
+
+    private void transmit(Processor p) {
+	try {
+	    DataSource output = p.getDataOutput();
+	    PushBufferDataSource pbds = (PushBufferDataSource) output;
+	    RTPManager rtpMgr = RTPManager.newInstance();
+	    SessionAddress localAddr, destAddr;
+	    SendStream sendStream;
+	    int port = 42506;
+	    SourceDescription srcDesList[];
+
+	    localAddr = new SessionAddress( InetAddress.getLocalHost(),
+					    port);
+	    
+	    InetAddress	ipAddr = InetAddress.getByName(ipAddress);
+	    destAddr = new SessionAddress( ipAddr, port);
+	    
+	    rtpMgr.initialize(localAddr);
+	    
+	    rtpMgr.addTarget(destAddr);
+	    
+	    System.err.println( "Created RTP session: " + ipAddress + " " + port);
+	    
+	    sendStream = rtpMgr.createSendStream(output, 0);		
+	    sendStream.start();
+
+	    p.start();
+	} catch(Exception e) {
+	    e.printStackTrace();
+	}
+    }
+    */
+</FONT>
+    <FONT color=purple>private</FONT> <FONT color=green>void</FONT> transmit(<FONT color=blue>Processor</FONT> p) {
+	<FONT color=#00c0c0>try</FONT> {
+	    <FONT color=blue>DataSource</FONT> output = p.getDataOutput();
+	    <FONT color=blue>DataSink</FONT> rtpSink;
+	    rtpSink = <FONT color=blue>Manager</FONT>.createDataSink(output, dest);
+	    <FONT color=blue>System</FONT>.out.println(<FONT color=magenta>"Sink content type: "</FONT> + rtpSink.getContentType());
+	    <FONT color=blue>System</FONT>.out.println(<FONT color=magenta>"Sink media type: "</FONT> + rtpSink.getOutputLocator().toString());
+	    rtpSink.open();
+	    rtpSink.start();
+	    p.start();
+	} <FONT color=#00c0c0>catch</FONT>(<FONT color=blue>Exception</FONT> e) {
+	    e.printStackTrace();
+	}
+    }
+
+    <FONT color=purple>public</FONT> <FONT color=#00c0c0>synchronized</FONT> <FONT color=green>void</FONT> controllerUpdate(<FONT color=blue>ControllerEvent</FONT> evt) {
+	<FONT color=#00c0c0>if</FONT> (evt <FONT color=#00c0c0>instanceof</FONT> <FONT color=blue>RealizeCompleteEvent</FONT>) {
+	    realized = true;
+	} <FONT color=#00c0c0>else</FONT> 	<FONT color=#00c0c0>if</FONT> (evt <FONT color=#00c0c0>instanceof</FONT> <FONT color=blue>ConfigureCompleteEvent</FONT>) {
+	    configured = true;
+	} <FONT color=#00c0c0>else</FONT> <FONT color=#00c0c0>if</FONT> (evt <FONT color=#00c0c0>instanceof</FONT> <FONT color=blue>EndOfMediaEvent</FONT>) {
+	    <FONT color=blue>System</FONT>.exit(0);
+	} <FONT color=#00c0c0>else</FONT> {
+	    <FONT color=red>// System.out.println(evt.toString());
+</FONT>	}
+    }
+}
+
+</FONT></CODE></PRE><!--
+<ul>
+  <li>
+
+  </li>
+  <li>
+
+  </li>
+  <li>
+
+  </li>
+  <li>
+
+  </li>
+  <li>
+
+  </li>
+</ul>
+</p>
+
+
+<ul>
+  
+  <li>
+
+  </li>
+  <li>
+
+  </li>
+  <li>
+
+  </li>
+  <li>
+
+  </li>
+  <li>
+
+  </li>
+</ul>
+</p>
+-->
+<HR>
+
+<ADDRESS>Jan Newmarch <A 
+href="http://jan.netcomp.monash.edu.au/">(http://jan.netcomp.monash.edu.au)</A></ADDRESS><A 
+href="mailto:jan.newmarch@infotech.monash.edu.au">jan.newmarch@infotech.monash.edu.au</A><BR><!-- hhmts start -->Last 
+modified: Tue Jun 3 00:44:33 EST 2003 <!-- hhmts end --><BR>Copyright ©Jan 
+Newmarch<BR><IMG alt="Creative Commons License" src="JMF_files/somerights20.png" 
+align=middle border=0> Copyright © Jan Newmarch, Monash University under the 
+terms of the <A href="http://creativecommons.org/licenses/by/2.1/au/" 
+rel=license>Creative Commons Attribution 2.1 Australia License</A>. 
+</BODY></HTML>

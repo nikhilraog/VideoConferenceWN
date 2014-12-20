@@ -1,0 +1,15 @@
+H1 {
+	BACKGROUND: yellow; COLOR: red
+}
+PRE {
+	BACKGROUND: #eaeaea; COLOR: darkblue
+}
+CODE {
+	COLOR: darkblue
+}
+.list {
+	BACKGROUND: #ccccff
+}
+.changed {
+	BACKGROUND: lightgrey
+}

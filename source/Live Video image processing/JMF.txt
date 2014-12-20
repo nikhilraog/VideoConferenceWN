@@ -1,0 +1,64 @@
+Record Movies with Java Media Framework (JMF)  
+ 
+Part 1: Introduction to JMF  More of this Feature  
+• Part 2: JMF Example
+• Part 3: Source Code
+ 
+ 
+ 
+ 
+ 
+ Join the Discussion  
+Discuss this article
+ 
+ 
+ 
+ 
+ 
+  Related Resources  
+• Resizing JPEG Images: Java Versus .NET
+• Java Programming Tutorial
+• Java Technology Quick-Start
+ 
+ 
+ 
+ 
+ 
+ 
+ Elsewhere on the Web  
+• Java Media Framework API (JMF)
+ 
+ 
+ 
+  
+ 
+
+By Gal Ratner
+
+While I was writing my own instant messenger using JMF (Java Media Framework), I had to figure out solutions to many challenging obstacles. The most difficult aspect of recording a movie from a webcam was making sure the proper ingredients were put in the correct order. Through my experience, I gained a higher level of mastery of JMF. If anyone is learning or exploring JMF, this tutorial will improve his or her working knowledge of the framework. 
+To begin, JMF is Sun's API for processing audio, video, and other time-based media. This is an optional package and can be downloaded from java.sun.com. See the "Elsewhere on the Web" sidebar for a link. In this tutorial, we are going to learn how to utilize JMF in order to record movies captured by a webcam connected to your computer. 
+
+
+Streaming Media
+Streaming Media, or time-based media, is a term used to describe any flow of data that requires us to receive and process the data in real-time. It is basically a steady stream of information that needs to be addressed, processed, and presented on the fly in order to either present it to the user or record it into a file. Processing operations can include converting the data into a different format, compressing or decompressing it, or merging it with other streams from other sources. The quality of the movie or song you are streaming is a function of several factors including bandwidth, processing efficiency of your system, and the compression format it was transmitted in. For high quality movies, we need more processing power and bandwidth. Quality is determined by, but not restricted to, the number of frames displayed each period of time. 
+The most common media formats are CINEPAK, which is used in AVI and QuickTime files, and MPEG-1, which is used in MPEG files. The most common protocol for streaming media is the real-time transport protocol (RTP). RTP can be used over your network or the Internet. It can be used with unicast or multicast IP addresses. When it is transmitted over unicast, separate copies of the media are sent to each consumer. When using multicast network architecture, make sure the data is duplicated and sent to the consumer while the source only transmits it once. RTP packets are not ordered and are not guaranteed. They are being transmitted and it is the receiver's responsibility to pick them up and place them in order to present the media. Some packets are lost along the way. We can monitor the progress of the data using RTCP (Real-Time Transport Control Protocol), which also provides an identification mechanism for RTP. 
+
+Data Sources
+There are two types of data sources available, a push data source and a pull data source. The pull data source can be a file or a web page. To use a pull data source, the client must initiate data transfer and control the pull stream from the source. The push data source is any source that broadcasts media using the real-time transport protocol (RTP). A push data source can be your microphone or webcam. 
+Controls
+Controls provide us with a way of monitoring and controlling the progress of media being downloaded. JMF has standard controls built in, and we can also define our own custom controls. 
+Players
+A player processes an input stream from a data source and renders it in real-time. A player is what we are going to put between the web cam and the screen. Since a player is responsible for processing and delivering a constant flow of data, it has several states. In the global scheme of things it can either be stopped or started. The steps that lead to a player being started are: 
+Realizing a Player: Realizing a player involves telling the player everything it needs to know about the data source it's going to play. When a player is realized, it knows what resources it needs in order to play the media. It also has visual components used to render the media to the screen. 
+Pre-Fetch: Once a player is realized, we can call its pre-fetch method in order to make it prepare to present the media. The player then preloads the data, obtains the resources it needs, and does whatever else it needs to prepare itself to play. When a player is done pre-fetching, it moves into the pre-fetched state. 
+Start: When a player is started, it moves into a started state. Its time-based media is mapped and its clock starts running. 
+Processors
+A processor is a type of player. In addition to rendering media data, a processor can output media through another data source to be used by another player or processor. A processor takes a data source's input, performs processing on the media, and then outputs the data. It can send the data to another device or to a data source. It can parse media streams, perform special effects encoding or decoding, combine multiple tracks of data, for example video and audio, and deliver the data to a screen or speakers. 
+A processor has several states that can be split into two main states: unrealized and realized. To realize a processor you first need to configure it. It then connects to the data source and accesses all the information it needs in order to process the data. It then realizes itself and moves into pre-fetching the media. At this point, we can start processing using the processor. While the processor is in the configured state, we can decide on our processing options using the track control object. *NOTE: If we call realize on an unrealized processor, it will automatically move it through the configuring and configured states, losing the option of getting its track controls. 
+
+Capture devices
+The microphone can capture audio; your webcam can capture video: therefore, they are both data sources (push data sources). Transmitting from those sources is done using a data sink. 
+Data sinks read media from a data source and transmit it to other locations such as a file, a network, or the Internet using ITP. 
+
+Next, we'll look at a JMF Example and walk through the source code. 
+
